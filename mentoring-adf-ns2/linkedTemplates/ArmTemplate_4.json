@@ -13,6 +13,191 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Copy_to_DB_all_pipelines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+				"activities": [
+					{
+						"name": "Copy_to_DB_movies_metadata",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Copy_to_DB_movies_metadata",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Copy_to_DB_credits",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Copy_to_DB_credits",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Copy_to_DB_ratings",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Copy_to_DB_ratings",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Level_1"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-02-26T20:11:14Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Master_pipeline_online')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy_files_json_increment_to_ADLS_raw_online",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copy_files_json_increment_to_ADLS_raw_online",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Copy_to_DB_online_purchase",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copy_files_json_increment_to_ADLS_raw_online",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Copy_to_DB_online_purchase",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copy_files_to_ADLS_raw_online_archive",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Copy_to_DB_online_purchase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copy_files_to_ADLS_raw_online_archive",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "delete_files_from_ADLS_raw_online",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copy_files_to_ADLS_raw_online_archive",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "load_3NF_online",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "delete_files_from_ADLS_raw_online",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "load_3NF_online",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Copy_to_DB_online_purchase",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "load_3NF_online",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Level_0"
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-04-02T11:14:32Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/copy_increment_to_DB_cinema_tickets')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -764,7 +949,9 @@
 				"annotations": [],
 				"lastPublishTime": "2023-02-26T21:14:44Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Copy_to_DB_all_pipelines')]"
+			]
 		}
 	]
 }

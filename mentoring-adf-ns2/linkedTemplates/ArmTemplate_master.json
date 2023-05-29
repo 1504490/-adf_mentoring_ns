@@ -35,6 +35,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linked_service_onprem'"
 		},
+		"AzureSqlDatabaseNS2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseNS2'"
+		},
 		"linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://mentoring-key-vault-ns2.vault.azure.net/"
@@ -91,6 +95,9 @@
 					},
 					"linked_service_azurementoringstoragens2_online_connectionString": {
 						"value": "[parameters('linked_service_azurementoringstoragens2_online_connectionString')]"
+					},
+					"AzureSqlDatabaseNS2_connectionString": {
+						"value": "[parameters('AzureSqlDatabaseNS2_connectionString')]"
 					},
 					"linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl": {
 						"value": "[parameters('linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl')]"

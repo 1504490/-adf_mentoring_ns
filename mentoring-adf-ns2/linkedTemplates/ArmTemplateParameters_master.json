@@ -26,6 +26,9 @@
 		"linked_service_onprem_connectionString": {
 			"value": ""
 		},
+		"AzureSqlDatabaseNS2_connectionString": {
+			"value": ""
+		},
 		"linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl": {
 			"value": "https://mentoring-key-vault-ns2.vault.azure.net/"
 		},

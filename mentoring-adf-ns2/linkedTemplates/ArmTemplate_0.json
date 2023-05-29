@@ -31,6 +31,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linked_service_azurementoringstoragens2_online'"
 		},
+		"AzureSqlDatabaseNS2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabaseNS2'"
+		},
 		"linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://mentoring-key-vault-ns2.vault.azure.net/"
@@ -426,6 +430,224 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipelineWeb_copy3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WebGET",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "WebSend",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WebGET",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@activity('WebGET').output.value",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"message": "Failed pipeline with run ID 111",
+								"dataFactoryName": "DataFactory",
+								"pipelineName": "Pipeline",
+								"errorMsg": "Error",
+								"receiver": "Nataliia_Susiak@epam.com"
+							}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "WebGET",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vvv",
+							"value": {
+								"value": "@activity('WebGET').output.value",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"subject": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"vvv": {
+						"type": "String"
+					},
+					"status": {
+						"type": "String"
+					},
+					"Status2": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-25T15:46:43Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipelineWeb_copy4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "WebGET",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": true,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
+							"method": "GET",
+							"headers": {},
+							"authentication": {
+								"type": "MSI",
+								"resource": "https://vault.azure.net"
+							}
+						}
+					},
+					{
+						"name": "WebSend",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "WebGET",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": true
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": {
+								"value": "@activity('WebGET').output.value",
+								"type": "Expression"
+							},
+							"method": "POST",
+							"headers": {},
+							"body": {
+								"message": "Failed pipeline with run ID 111",
+								"dataFactoryName": "DataFactory",
+								"pipelineName": "Pipeline",
+								"errorMsg": "Error",
+								"receiver": "Nataliia_Susiak@epam.com"
+							}
+						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "WebGET",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vvv",
+							"value": {
+								"value": "@activity('WebGET').output.value",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"subject": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"vvv": {
+						"type": "String"
+					},
+					"status": {
+						"type": "String"
+					},
+					"Status2": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2023-05-25T15:46:43Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/azure_mentoring_ns2_DB')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -572,111 +794,15 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipelineWeb_copy3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabaseNS2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "WebGET",
-						"type": "WebActivity",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": true,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
-							"method": "GET",
-							"headers": {},
-							"authentication": {
-								"type": "MSI",
-								"resource": "https://vault.azure.net"
-							}
-						}
-					},
-					{
-						"name": "WebSend",
-						"type": "WebActivity",
-						"dependsOn": [
-							{
-								"activity": "WebGET",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": true
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"url": {
-								"value": "@activity('WebGET').output.value",
-								"type": "Expression"
-							},
-							"method": "POST",
-							"headers": {},
-							"body": {
-								"message": "Failed pipeline with run ID 111",
-								"dataFactoryName": "DataFactory",
-								"pipelineName": "Pipeline",
-								"errorMsg": "Error",
-								"receiver": "Nataliia_Susiak@epam.com"
-							}
-						}
-					},
-					{
-						"name": "Set variable1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "WebGET",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "vvv",
-							"value": {
-								"value": "@activity('WebGET').output.value",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"parameters": {
-					"subject": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"vvv": {
-						"type": "String"
-					},
-					"status": {
-						"type": "String"
-					},
-					"Status2": {
-						"type": "String"
-					}
-				},
 				"annotations": [],
-				"lastPublishTime": "2023-05-25T15:46:43Z"
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabaseNS2_connectionString')]"
+				}
 			},
 			"dependsOn": []
 		},
@@ -1018,102 +1144,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/azure_mentoring_ns2_DB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceBlobStorage')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "linked_service_azurementoringstoragens2",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"container": "movies"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "",
-					"firstRowAsHeader": true,
-					"quoteChar": ""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linked_service_azurementoringstoragens2')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_ADLS_raw_metadatadrive')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "linked_service_azurementoringdatalakns2",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"SourcePath": {
-						"type": "string"
-					},
-					"SourceColumnDelimiter": {
-						"type": "string"
-					},
-					"SourceEncoding": {
-						"type": "string"
-					},
-					"SourceEscapeCharacter": {
-						"type": "string"
-					},
-					"SourceQuoteCharacter": {
-						"type": "string"
-					},
-					"SourceRowDelimiter": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@dataset().SourcePath",
-							"type": "Expression"
-						},
-						"folderPath": "metadata-drive",
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": {
-						"value": "@dataset().SourceColumnDelimiter",
-						"type": "Expression"
-					},
-					"rowDelimiter": {
-						"value": "@dataset().SourceRowDelimiter",
-						"type": "Expression"
-					},
-					"encodingName": {
-						"value": "@dataset().SourceEncoding",
-						"type": "Expression"
-					},
-					"escapeChar": {
-						"value": "@dataset().SourceEscapeCharacter",
-						"type": "Expression"
-					},
-					"firstRowAsHeader": true,
-					"quoteChar": {
-						"value": "@dataset().SourceQuoteCharacter",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/linked_service_azurementoringdatalakns2')]"
 			]
 		}
 	]

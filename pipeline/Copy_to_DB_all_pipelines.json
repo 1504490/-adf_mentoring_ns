@@ -1,0 +1,53 @@
+{
+	"name": "Copy_to_DB_all_pipelines",
+	"properties": {
+		"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+		"activities": [
+			{
+				"name": "Copy_to_DB_movies_metadata",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_to_DB_movies_metadata",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Copy_to_DB_credits",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_to_DB_credits",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Copy_to_DB_ratings",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_to_DB_ratings",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Level_1"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-26T20:11:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

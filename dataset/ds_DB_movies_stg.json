@@ -1,0 +1,34 @@
+{
+	"name": "ds_DB_movies_stg",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azure_mentoring_ns2_DB",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"DestinationSchema": {
+				"type": "string"
+			},
+			"DestinationTable": {
+				"type": "string"
+			},
+			"MappingColumns": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().DestinationSchema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().DestinationTable",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

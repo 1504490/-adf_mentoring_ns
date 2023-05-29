@@ -1,0 +1,216 @@
+{
+	"name": "copy_increment_to_DB_cinema_tickets",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy increment cinematickets onprem to Azure",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "GetLastStartWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "select * \nfrom [dbo].[Tickets]\nwhere TransactionDt > '@{activity('GetLastStartWatermark').output.firstRow.MaxWatermark}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE [stg].[cinema_tickets]",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "CinemaCode",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "cinema_code",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CinemaName",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "cinema_name",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MovieId",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "movie_id",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TicketCount",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "ticket_count",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TicketPrice",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 1,
+									"precision": 4
+								},
+								"sink": {
+									"name": "ticket_price",
+									"type": "Decimal",
+									"physicalType": "decimal",
+									"scale": 1,
+									"precision": 4
+								}
+							},
+							{
+								"source": {
+									"name": "TransactionId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "transaction_id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TransactionDt",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "transaction_date",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_onprem_cinematickets_tickets",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_DB_stg_cinema_tickets",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "GetLastStartWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "exec  [dbo].[spGetMaxWatermark] 'cinema_tickets'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_DB_dbo_watermarktable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "InsertMaxWatermarkNew",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Copy increment cinematickets onprem to Azure",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "exec [dbo].[spInsertMaxWatermarkNew] 'cinema_tickets'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_DB_dbo_watermarktable",
+						"type": "DatasetReference"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-13T18:57:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

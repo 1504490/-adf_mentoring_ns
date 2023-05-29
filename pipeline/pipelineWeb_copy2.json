@@ -1,0 +1,101 @@
+{
+	"name": "pipelineWeb_copy2",
+	"properties": {
+		"activities": [
+			{
+				"name": "WebGET",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": true,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "WebSend",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "WebGET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": true
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@activity('WebGET').output.value",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"message": "Failed pipeline with run ID 111",
+						"dataFactoryName": "DataFactory",
+						"pipelineName": "Pipeline",
+						"errorMsg": "Error",
+						"receiver": "Nataliia_Susiak@epam.com"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "WebGET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vvv",
+					"value": {
+						"value": "@activity('WebGET').output.value",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"subject": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"vvv": {
+				"type": "String"
+			},
+			"status": {
+				"type": "String"
+			},
+			"Status2": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-25T15:46:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

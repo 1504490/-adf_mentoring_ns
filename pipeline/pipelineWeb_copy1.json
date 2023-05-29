@@ -1,0 +1,133 @@
+{
+	"name": "pipelineWeb_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "WebGET",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "WebSend",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "WebGET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@activity('WebGET').output.value",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"message": "Failed pipeline with run ID 111",
+						"dataFactoryName": "DataFactory",
+						"pipelineName": "Pipeline",
+						"errorMsg": "Error",
+						"receiver": "Nataliia_Susiak@epam.com"
+					}
+				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "WebGET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "status",
+					"value": "failed"
+				}
+			},
+			{
+				"name": "WebSend_copy1",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@activity('WebGET').output.value",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"message": "Failed @{activity('Set variable1').output.value} pipeline with run ID @{pipeline().parameters.pipelineid}",
+						"dataFactoryName": "DataFactory",
+						"pipelineName": "Pipeline",
+						"errorMsg": "Error",
+						"receiver": "Nataliia_Susiak@epam.com"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"pipelineid": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"status": {
+				"type": "String"
+			},
+			"idddd": {
+				"type": "String",
+				"defaultValue": "121212"
+			},
+			"Status2": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-25T15:46:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

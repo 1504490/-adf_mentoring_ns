@@ -1,0 +1,23 @@
+{
+	"name": "ds_datalake_raw_rating_binary",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linked_service_azurementoringdatalakns2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('rating',formatDateTime(utcNow(),'_yyyyMMdd_HHmmss.fff'), '.zip')",
+					"type": "Expression"
+				},
+				"folderPath": "rating",
+				"fileSystem": "raw"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

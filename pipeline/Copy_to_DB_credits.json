@@ -1,0 +1,153 @@
+{
+	"name": "Copy_to_DB_credits",
+	"properties": {
+		"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+		"activities": [
+			{
+				"name": "Copy_to_DB_credits",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "movies//movies_metadata.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "stg.movies_metadata"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "pipelineId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							{
+								"name": "source_filename",
+								"value": "$$FILEPATH"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": false,
+							"wildcardFileName": "credits_*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings",
+							"skipLineCount": 0
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE stg.credits;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "cast",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "cast",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "crew",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "crew",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "id",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "pipelineId",
+									"type": "String"
+								},
+								"sink": {
+									"name": "pipelineId",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "source_filename",
+									"type": "String"
+								},
+								"sink": {
+									"name": "source_filename",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_ADLS_raw_movies_credits_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_DB_stg_credits",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Level_2"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-10T17:33:41Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

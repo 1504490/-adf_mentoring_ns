@@ -1,0 +1,22 @@
+{
+	"name": "linked_service_onprem_sqlserver_key_vault",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "linked_server_mentoring_key_vault_ns2",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "ConnOnPrem"
+			}
+		},
+		"connectVia": {
+			"referenceName": "SelfHostedIR",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

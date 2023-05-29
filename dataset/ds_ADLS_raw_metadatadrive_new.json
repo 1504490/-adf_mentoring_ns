@@ -1,0 +1,39 @@
+{
+	"name": "ds_ADLS_raw_metadatadrive_new",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linked_service_azurementoringdatalakns2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "credits.csv",
+				"folderPath": "metadata-drive",
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "cast",
+				"type": "String"
+			},
+			{
+				"name": "crew",
+				"type": "String"
+			},
+			{
+				"name": "id",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

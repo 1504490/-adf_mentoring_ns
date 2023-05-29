@@ -1,0 +1,19 @@
+{
+	"name": "ds_blob_storage_online",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linked_service_azurementoringstoragens2_online",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "online2"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

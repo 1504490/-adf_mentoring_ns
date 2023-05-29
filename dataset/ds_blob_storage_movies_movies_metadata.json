@@ -1,0 +1,25 @@
+{
+	"name": "ds_blob_storage_movies_movies_metadata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "linked_service_azurementoringstoragens2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "movies_metadata.csv",
+				"container": "movies"
+			},
+			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
+			"escapeChar": "\"",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

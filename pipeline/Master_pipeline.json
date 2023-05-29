@@ -1,0 +1,106 @@
+{
+	"name": "Master_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_files_to_ADLS_raw_movies",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "copy_files_to_ADLS_raw_movies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Copy_to_DB_all_pipelines",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "copy_files_to_ADLS_raw_movies",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Copy_to_DB_all_pipelines",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "copy_files_to_ADLS_raw_movies_archive",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Copy_to_DB_all_pipelines",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "copy_files_to_ADLS_raw_movies_archive",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "delete_files_from_ADLS_raw_movies",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "copy_files_to_ADLS_raw_movies_archive",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "delete_files_from_ADLS_raw_movies",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "load_3NF",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Copy_to_DB_all_pipelines",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "load_3NF",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "Level_0"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-26T21:14:44Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

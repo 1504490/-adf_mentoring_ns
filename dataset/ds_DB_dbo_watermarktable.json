@@ -1,0 +1,39 @@
+{
+	"name": "ds_DB_dbo_watermarktable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azure_mentoring_ns2_DB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "WatermarkStartValue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WatermarkEndValue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Is_latest",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "watermarktable"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

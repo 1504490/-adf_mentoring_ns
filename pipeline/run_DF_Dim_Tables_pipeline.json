@@ -1,0 +1,67 @@
+{
+	"name": "run_DF_Dim_Tables_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "DimTables",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "TRUNCATE Dim Tables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Dim_Tables",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			},
+			{
+				"name": "TRUNCATE Dim Tables",
+				"type": "Script",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB_DataMart",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "  TRUNCATE TABLE [dbo].[DimMovie];\n  TRUNCATE TABLE [dbo].[DimOnlineService];"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-04-25T20:02:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

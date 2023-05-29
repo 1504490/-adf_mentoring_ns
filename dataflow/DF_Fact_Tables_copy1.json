@@ -1,0 +1,166 @@
+{
+	"name": "DF_Fact_Tables_copy1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_tOnlinePurchase",
+						"type": "DatasetReference"
+					},
+					"name": "dsDBtOnlinePurchase"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_tOnlineService",
+						"type": "DatasetReference"
+					},
+					"name": "tOnlineService"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_DataMart_dbo_DimOnlineService",
+						"type": "DatasetReference"
+					},
+					"name": "dboDimOnlineService"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_DB_Datamart_FactOnlinePurchase_MonthlySnapshot",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookupServiceKey"
+				},
+				{
+					"name": "Select1ColumnstOnlinePurchase"
+				},
+				{
+					"name": "jointOnlineService"
+				},
+				{
+					"name": "select2OnlinePurchase"
+				},
+				{
+					"name": "select3tOnlinePurchase"
+				},
+				{
+					"name": "derivedDateKey"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Id as integer,",
+				"          ServiceId as integer,",
+				"          MovieId as integer,",
+				"          UserId as integer,",
+				"          Price as decimal(4,1),",
+				"          TransactionId as string,",
+				"          TransactionDate as timestamp,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp,",
+				"          SrcFileName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     limit: 10,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dsDBtOnlinePurchase",
+				"source(output(",
+				"          ServiceId as integer,",
+				"          ServiceCode as string,",
+				"          ServiceName as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tOnlineService",
+				"source(output(",
+				"          ServiceKey as integer,",
+				"          ServiceCode as string,",
+				"          ServiceName as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dboDimOnlineService",
+				"select2OnlinePurchase, dboDimOnlineService lookup(select2OnlinePurchase@ServiceCode == dboDimOnlineService@ServiceCode,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupServiceKey",
+				"dsDBtOnlinePurchase select(mapColumn(",
+				"          ServiceId,",
+				"          MovieId,",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Select1ColumnstOnlinePurchase",
+				"Select1ColumnstOnlinePurchase, tOnlineService join(Select1ColumnstOnlinePurchase@ServiceId == tOnlineService@ServiceId,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointOnlineService",
+				"jointOnlineService select(mapColumn(",
+				"          MovieId,",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate,",
+				"          ServiceCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2OnlinePurchase",
+				"lookupServiceKey select(mapColumn(",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate,",
+				"          ServiceKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3tOnlinePurchase",
+				"select3tOnlinePurchase derive(MonthKey = toInteger(toString(fromUTC(TransactionDate),'yyyyMM'))) ~> derivedDateKey",
+				"derivedDateKey aggregate(groupBy(MonthKey,",
+				"          ServiceKey),",
+				"     PurchaseAmount = sum(Price),",
+				"          PurchaseQuantity = count(TransactionId)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          MonthKey as integer,",
+				"          OnlineServiceKey as integer,",
+				"          PurchaseAmount as decimal(10,1),",
+				"          PurchaseQuantity as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          MonthKey,",
+				"          OnlineServiceKey = ServiceKey,",
+				"          PurchaseAmount,",
+				"          PurchaseQuantity",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

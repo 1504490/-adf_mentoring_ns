@@ -1,0 +1,96 @@
+{
+	"name": "pipelineWeb",
+	"properties": {
+		"activities": [
+			{
+				"name": "WebGET",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://mentoring-key-vault-ns2.vault.azure.net/secrets/LogicAppsHTTP/a11ddadb848b49fbab63c095358f2503?api-version=7.0",
+					"method": "GET",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://vault.azure.net"
+					}
+				}
+			},
+			{
+				"name": "WebSend",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "WebGET",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": {
+						"value": "@activity('WebGET').output.value",
+						"type": "Expression"
+					},
+					"method": "POST",
+					"body": {
+						"value": "{   \n    \"header\":\"@{pipeline().parameters.Header}\",\n    \"dataFactoryName\":\"@{pipeline().parameters.DataFactoryName}\",\n    \"pipelineId\":\"@{pipeline().parameters.PipelineId}\",\n    \"pipelineName\":\"@{pipeline().parameters.PipelineName}\",\n    \"error\":\"@{pipeline().parameters.Error}\",\n    \"receiver\":\"@{pipeline().parameters.Reciever}\"\n}",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"Header": {
+				"type": "string",
+				"defaultValue": "header"
+			},
+			"Reciever": {
+				"type": "string",
+				"defaultValue": "Nataliia_Susiak@epam.com"
+			},
+			"Error": {
+				"type": "string",
+				"defaultValue": "No errors"
+			},
+			"DataFactoryName": {
+				"type": "string",
+				"defaultValue": "data factory name"
+			},
+			"PipelineId": {
+				"type": "string",
+				"defaultValue": "pipeline id"
+			},
+			"PipelineName": {
+				"type": "string",
+				"defaultValue": "pipeline name"
+			}
+		},
+		"variables": {
+			"status": {
+				"type": "String"
+			},
+			"Status2": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-05-25T16:50:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

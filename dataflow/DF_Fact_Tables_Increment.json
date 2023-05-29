@@ -1,0 +1,408 @@
+{
+	"name": "DF_Fact_Tables_Increment",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_tOnlinePurchase",
+						"type": "DatasetReference"
+					},
+					"name": "dsDBtOnlinePurchase"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_tOnlineService",
+						"type": "DatasetReference"
+					},
+					"name": "tOnlineService"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_DataMart_dbo_DimOnlineService",
+						"type": "DatasetReference"
+					},
+					"name": "dboDimOnlineService"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_tMovies",
+						"type": "DatasetReference"
+					},
+					"name": "tMovies"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_DataMart_dbo_DimMovie",
+						"type": "DatasetReference"
+					},
+					"name": "DimMovie"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_FactOnlinePurchaseIncrement",
+						"type": "DatasetReference"
+					},
+					"name": "FactOnlinePurchaseTRG"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_FactOnlinePurchaseIncrement",
+						"type": "DatasetReference"
+					},
+					"name": "FactOnlinePurchase"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_DB_dbo_FactOnlinePurchaseIncrement",
+						"type": "DatasetReference"
+					},
+					"name": "FactOnlinePurchaseIncrementUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookupServiceKey"
+				},
+				{
+					"name": "Select1ColumnstOnlinePurchase"
+				},
+				{
+					"name": "jointOnlineService"
+				},
+				{
+					"name": "select2OnlinePurchase"
+				},
+				{
+					"name": "select3tOnlinePurchase"
+				},
+				{
+					"name": "derivedDateKey"
+				},
+				{
+					"name": "lookupMovieKey"
+				},
+				{
+					"name": "select5Result"
+				},
+				{
+					"name": "select6tMovies"
+				},
+				{
+					"name": "select7MovieKey"
+				},
+				{
+					"name": "joinMovieKey"
+				},
+				{
+					"name": "select8MovieKey"
+				},
+				{
+					"name": "AddHashTRG"
+				},
+				{
+					"name": "NewAndUpdatedRows"
+				},
+				{
+					"name": "AddHashSRC"
+				},
+				{
+					"name": "select9DropUnusedColumns"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select10Update"
+				},
+				{
+					"name": "exists1"
+				},
+				{
+					"name": "exists2"
+				},
+				{
+					"name": "derivedNewUpdatedDate"
+				},
+				{
+					"name": "select11"
+				},
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Id as integer,",
+				"          ServiceId as integer,",
+				"          MovieId as integer,",
+				"          UserId as integer,",
+				"          Price as decimal(4,1),",
+				"          TransactionId as string,",
+				"          TransactionDate as timestamp,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp,",
+				"          SrcFileName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dsDBtOnlinePurchase",
+				"source(output(",
+				"          ServiceId as integer,",
+				"          ServiceCode as string,",
+				"          ServiceName as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tOnlineService",
+				"source(output(",
+				"          ServiceKey as integer,",
+				"          ServiceCode as string,",
+				"          ServiceName as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> dboDimOnlineService",
+				"source(output(",
+				"          MovieId as integer,",
+				"          MovieIdNK as integer,",
+				"          Budget as integer,",
+				"          HomepagePath as string,",
+				"          Title as string,",
+				"          OriginalTitle as string,",
+				"          ReleaseDate as date,",
+				"          Revenue as long,",
+				"          Runtime as integer,",
+				"          MovieStatusId as integer,",
+				"          AvgVote as decimal(3,1),",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp,",
+				"          SrcFileName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> tMovies",
+				"source(output(",
+				"          MovieKey as integer,",
+				"          MovieIdNK as integer,",
+				"          Title as string,",
+				"          ReleaseDate as date,",
+				"          Runtime as integer,",
+				"          MovieStatus as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimMovie",
+				"source(output(",
+				"          DateKey as integer,",
+				"          OnlineServiceKey as integer,",
+				"          MovieKey as integer,",
+				"          Price as decimal(4,1),",
+				"          TransactionId as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> FactOnlinePurchaseTRG",
+				"select2OnlinePurchase, dboDimOnlineService lookup(select2OnlinePurchase@ServiceCode == dboDimOnlineService@ServiceCode,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupServiceKey",
+				"dsDBtOnlinePurchase select(mapColumn(",
+				"          ServiceId,",
+				"          MovieId,",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Select1ColumnstOnlinePurchase",
+				"Select1ColumnstOnlinePurchase, tOnlineService join(Select1ColumnstOnlinePurchase@ServiceId == tOnlineService@ServiceId,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> jointOnlineService",
+				"jointOnlineService select(mapColumn(",
+				"          MovieId,",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate,",
+				"          ServiceCode",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2OnlinePurchase",
+				"lookupServiceKey select(mapColumn(",
+				"          MovieId,",
+				"          Price,",
+				"          TransactionId,",
+				"          TransactionDate,",
+				"          ServiceKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3tOnlinePurchase",
+				"select3tOnlinePurchase derive(DateKey = toInteger(toString(fromUTC(TransactionDate),'yyyyMMdd'))) ~> derivedDateKey",
+				"derivedDateKey, select8MovieKey lookup(select3tOnlinePurchase@MovieId == select8MovieKey@MovieId,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupMovieKey",
+				"lookupMovieKey select(mapColumn(",
+				"          Price,",
+				"          TransactionId,",
+				"          DateKey,",
+				"          OnlineServiceKey = ServiceKey,",
+				"          MovieKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select5Result",
+				"tMovies select(mapColumn(",
+				"          MovieId,",
+				"          MovieIdNK",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select6tMovies",
+				"DimMovie select(mapColumn(",
+				"          MovieKey,",
+				"          MovieIdNK",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select7MovieKey",
+				"select6tMovies, select7MovieKey join(select6tMovies@MovieIdNK == select7MovieKey@MovieIdNK,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMovieKey",
+				"joinMovieKey select(mapColumn(",
+				"          MovieId,",
+				"          MovieKey",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select8MovieKey",
+				"FactOnlinePurchaseTRG derive(columns_hash = md5(byNames(split('DateKey,OnlineServiceKey,MovieKey,Price',',')))) ~> AddHashTRG",
+				"AddHashSRC, AddHashTRG exists(select5Result@TransactionId == FactOnlinePurchaseTRG@TransactionId,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> NewAndUpdatedRows",
+				"select5Result derive(columns_hash = md5(byNames(split('DateKey,OnlineServiceKey,MovieKey,Price',','))),",
+				"          CreatedDate = currentUTC(),",
+				"          ModifiedDate = currentUTC()) ~> AddHashSRC",
+				"NewAndUpdatedRows select(mapColumn(",
+				"          Price,",
+				"          TransactionId,",
+				"          DateKey,",
+				"          OnlineServiceKey,",
+				"          MovieKey,",
+				"          CreatedDate,",
+				"          ModifiedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select9DropUnusedColumns",
+				"AddHashTRG, AddHashSRC join(FactOnlinePurchaseTRG@TransactionId == select5Result@TransactionId,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          TransactionId = FactOnlinePurchaseTRG@TransactionId,",
+				"          Price = select5Result@Price,",
+				"          DateKey = select5Result@DateKey,",
+				"          OnlineServiceKey = select5Result@OnlineServiceKey,",
+				"          MovieKey = select5Result@MovieKey,",
+				"          CreatedDate = AddHashSRC@CreatedDate,",
+				"          ModifiedDate = AddHashSRC@ModifiedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select10Update",
+				"AddHashTRG, AddHashSRC exists(FactOnlinePurchaseTRG@TransactionId == select5Result@TransactionId",
+				"     && AddHashTRG@columns_hash == AddHashSRC@columns_hash,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists1",
+				"select10Update, exists1 exists(select10Update@TransactionId == FactOnlinePurchaseTRG@TransactionId,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists2",
+				"exists2 derive(ModifiedDate = currentUTC()) ~> derivedNewUpdatedDate",
+				"derivedNewUpdatedDate select(mapColumn(",
+				"          TransactionId,",
+				"          Price,",
+				"          DateKey,",
+				"          OnlineServiceKey,",
+				"          MovieKey,",
+				"          ModifiedDate",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select11",
+				"select11 alterRow(updateIf(true())) ~> alterRow1",
+				"select9DropUnusedColumns sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DateKey as integer,",
+				"          OnlineServiceKey as integer,",
+				"          MovieKey as integer,",
+				"          Price as decimal(4,1),",
+				"          TransactionId as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          DateKey,",
+				"          OnlineServiceKey,",
+				"          MovieKey,",
+				"          Price,",
+				"          TransactionId,",
+				"          CreatedDate,",
+				"          ModifiedDate",
+				"     )) ~> FactOnlinePurchase",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          DateKey as integer,",
+				"          OnlineServiceKey as integer,",
+				"          MovieKey as integer,",
+				"          Price as decimal(4,1),",
+				"          TransactionId as string,",
+				"          CreatedDate as timestamp,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['TransactionId'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          DateKey,",
+				"          OnlineServiceKey,",
+				"          MovieKey,",
+				"          Price,",
+				"          TransactionId,",
+				"          ModifiedDate",
+				"     )) ~> FactOnlinePurchaseIncrementUpdate"
+			]
+		}
+	}
+}

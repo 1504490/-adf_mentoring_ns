@@ -1,0 +1,202 @@
+{
+	"name": "copy_files_json_increment_to_ADLS_raw_online",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy increment online From Blob to ADL",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "GetLastStartWatermark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"modifiedDatetimeStart": {
+								"value": "@{activity('GetLastStartWatermark').output.firstRow.MaxWatermark}",
+								"type": "Expression"
+							},
+							"modifiedDatetimeEnd": {
+								"value": "@pipeline().TriggerTime",
+								"type": "Expression"
+							},
+							"wildcardFileName": "*.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"parallelCopies": 32,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['serviceName']"
+								},
+								"sink": {
+									"path": "serviceName"
+								}
+							},
+							{
+								"source": {
+									"path": "$['serviceCode']"
+								},
+								"sink": {
+									"path": "serviceCode"
+								}
+							},
+							{
+								"source": {
+									"path": "$['movieId']"
+								},
+								"sink": {
+									"path": "movieId"
+								}
+							},
+							{
+								"source": {
+									"path": "$['userId']"
+								},
+								"sink": {
+									"path": "userId"
+								}
+							},
+							{
+								"source": {
+									"path": "$['price']"
+								},
+								"sink": {
+									"path": "price"
+								}
+							},
+							{
+								"source": {
+									"path": "$['transaction']['id']"
+								},
+								"sink": {
+									"path": "id"
+								}
+							},
+							{
+								"source": {
+									"path": "$['transaction']['datetime']"
+								},
+								"sink": {
+									"path": "datetime"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_blob_storage_online",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_ADLS_raw_online",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "GetLastStartWatermark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "exec  [dbo].[spGetMaxWatermark] 'online'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "ds_DB_dbo_watermarktable",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "SP spInsertMaxWatermarkNewStartPipeline",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy increment online From Blob to ADL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spInsertMaxWatermarkNewStartPipeline]",
+					"storedProcedureParameters": {
+						"TableName": {
+							"value": "online",
+							"type": "String"
+						},
+						"StartPipeline": {
+							"value": {
+								"value": "@pipeline().TriggerTime",
+								"type": "Expression"
+							},
+							"type": "Datetime"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-04-01T21:36:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

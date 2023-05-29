@@ -1,0 +1,61 @@
+{
+	"name": "load_3NF_online",
+	"properties": {
+		"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+		"activities": [
+			{
+				"name": "spPopulateOnlineService",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateOnlineService]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateOnlinePurchase",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spPopulateOnlineService",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateOnlinePurchase]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Level_1"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-02T09:45:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,170 @@
+{
+	"name": "Copy_to_DB_online_purchase",
+	"properties": {
+		"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+		"activities": [
+			{
+				"name": "Copy_to_DB_online_purchase",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "movies//movies_metadata.csv"
+					},
+					{
+						"name": "Destination",
+						"value": "stg.movies_metadata"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"additionalColumns": [
+							{
+								"name": "source_filename",
+								"value": "$$FILEPATH"
+							},
+							{
+								"name": "pipelineId",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": false,
+							"wildcardFileName": "*.json",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE  stg.online_purchase;",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['serviceName']"
+								},
+								"sink": {
+									"name": "online_service_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['serviceCode']"
+								},
+								"sink": {
+									"name": "online_service_code",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['movieId']"
+								},
+								"sink": {
+									"name": "movie_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['userId']"
+								},
+								"sink": {
+									"name": "user_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['price']"
+								},
+								"sink": {
+									"name": "price",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['id']"
+								},
+								"sink": {
+									"name": "transaction_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['datetime']"
+								},
+								"sink": {
+									"name": "transaction_date",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['source_filename']"
+								},
+								"sink": {
+									"name": "source_filename",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['pipelineId']"
+								},
+								"sink": {
+									"name": "pipelineId",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_ADLS_raw_online",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_DB_stg_online_purchase",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Level_2"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-04-02T10:52:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

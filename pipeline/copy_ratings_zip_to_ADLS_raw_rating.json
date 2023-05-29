@@ -1,0 +1,57 @@
+{
+	"name": "copy_ratings_zip_to_ADLS_raw_rating",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_ds_azurementoringdatalakns2_raw_rating",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "BinarySource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "BinaryReadSettings"
+						}
+					},
+					"sink": {
+						"type": "BinarySink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_datalake_au_rating_rating_zip",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_datalake_raw_rating_binary",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Level_1"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-25T22:19:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

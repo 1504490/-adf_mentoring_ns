@@ -1,0 +1,55 @@
+{
+	"name": "ds_DB_dbo_FactOnlinePurchaseIncrement",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "azure_mentoring_ns2_DB_DataMart",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DateKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OnlineServiceKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MovieKey",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Price",
+				"type": "decimal",
+				"precision": 4,
+				"scale": 1
+			},
+			{
+				"name": "TransactionId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ModifiedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FactOnlinePurchaseIncrement"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

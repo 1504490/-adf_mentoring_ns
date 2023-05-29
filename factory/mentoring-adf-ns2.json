@@ -1,0 +1,17 @@
+{
+	"name": "mentoring-adf-ns2",
+	"properties": {
+		"globalParameters": {
+			"pLogicAppsHTTP": {
+				"type": "string",
+				"value": "https://prod-29.francecentral.logic.azure.com:443/workflows/c05184080eb14a95b3c5c8441e9cbc39/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zMEQlui-GOlOA6v7qD2W5nOgEQyGXjxeIFNFiTnOdfE"
+			}
+		}
+	},
+	"location": "francecentral",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "6056345a-4564-41b7-afa4-42d1bce9794f",
+		"tenantId": "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
+	}
+}

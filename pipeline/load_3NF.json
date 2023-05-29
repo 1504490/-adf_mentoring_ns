@@ -1,0 +1,194 @@
+{
+	"name": "load_3NF",
+	"properties": {
+		"description": "Copy from csv (movies_metadata.csv) to Azure DB (azure-mentoring-ns2.database.windows.net)",
+		"activities": [
+			{
+				"name": "spPopulateCast",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateCast]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateCompany",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateCompany]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateGenre",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateGenre]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateMovies",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateMovies]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateMoviesCastMap",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateMoviesCastMap]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateMoviesCompanyMap",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateMoviesCompanyMap]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateMoviesGenreMap",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateMoviesGenreMap]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulateMovieStatus",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulateMovieStatus]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "spPopulatetRatings",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spPopulatetRatings]"
+				},
+				"linkedServiceName": {
+					"referenceName": "azure_mentoring_ns2_DB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Level_1"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-02-25T22:19:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

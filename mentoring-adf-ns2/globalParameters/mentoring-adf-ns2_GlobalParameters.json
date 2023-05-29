@@ -1,0 +1,6 @@
+{
+	"pLogicAppsHTTP": {
+		"type": "string",
+		"value": "https://prod-29.francecentral.logic.azure.com:443/workflows/c05184080eb14a95b3c5c8441e9cbc39/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zMEQlui-GOlOA6v7qD2W5nOgEQyGXjxeIFNFiTnOdfE"
+	}
+}

@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "mentoring-adf-ns2"
+		},
+		"azure_mentoring_ns2_DB_connectionString": {
+			"value": ""
+		},
+		"azure_mentoring_ns2_DB_DataMart_connectionString": {
+			"value": ""
+		},
+		"linked_service_azurementoringauns2_connectionString": {
+			"value": ""
+		},
+		"linked_service_azurementoringdatalakns2_accountKey": {
+			"value": ""
+		},
+		"linked_service_azurementoringstoragens2_connectionString": {
+			"value": ""
+		},
+		"linked_service_azurementoringstoragens2_online_connectionString": {
+			"value": ""
+		},
+		"linked_service_onprem_connectionString": {
+			"value": ""
+		},
+		"linked_server_mentoring_key_vault_ns2_properties_typeProperties_baseUrl": {
+			"value": "https://mentoring-key-vault-ns2.vault.azure.net/"
+		},
+		"linked_service_azurementoringdatalakns2_properties_typeProperties_url": {
+			"value": "https://azurementoringdatalakns2.dfs.core.windows.net/"
+		},
+		"linked_service_onprem_sqlserver_key_vault_properties_typeProperties_connectionString_secretName": {
+			"value": "ConnOnPrem"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

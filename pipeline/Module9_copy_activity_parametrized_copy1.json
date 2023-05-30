@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "Lookup1a",
+				"description": "sdfsdf",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
